@@ -2,12 +2,15 @@
 //  TaskViewController.swift
 //  HW2.13
 //
-//  Created by max on 08.12.2021.
+//  Created by Никита Шинов on 08.12.2021.
 //
 
 import UIKit
+import CoreData
 
 class TaskViewController: UIViewController {
+    
+    private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     private lazy var taskTextField: UITextField = {
         let textField = UITextField()
@@ -22,7 +25,7 @@ class TaskViewController: UIViewController {
                                        green: 101/255,
                                        blue: 192/255,
                                        alpha: 194/255),
-                     action: UIAction { _ in self.dismiss(animated: true) })
+                     action: UIAction { _ in self.save() })
     }()
     
     private lazy var cancelButton: UIButton = {
@@ -74,6 +77,20 @@ class TaskViewController: UIViewController {
         attributes.font = UIFont.boldSystemFont(ofSize: 18)
         buttonConfiguration.attributedTitle = AttributedString(title, attributes: attributes)
         return UIButton(configuration: buttonConfiguration, primaryAction: action)
+    }
+    
+    private func save() {
+        let task = Task(context: context)
+        task.title = taskTextField.text
+        
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch let error {
+                print (error)
+            }
+        }
+        dismiss(animated: true)
     }
 
 }
